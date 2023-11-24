@@ -1,4 +1,10 @@
 // Define the pins for the ultrasonic sensor and LEDs
+
+#include <Wire.h> 
+#include <LiquidCrystal_I2C.h>
+
+LiquidCrystal_I2C lcd(0x27,16,2); 
+
 const int trigPin = 2; // Trigger pin of the ultrasonic sensor
 const int echoPin = 3; // Echo pin of the ultrasonic sensor
 const int greenLedPin = 4; // Pin for the green LED
@@ -17,6 +23,18 @@ void setup() {
 
   // Serial communication for debugging
   Serial.begin(9600);
+
+  //just testing
+
+  lcd.init();                      // initialize the lcd 
+  lcd.init();
+  // Print a message to the LCD.
+   lcd.setCursor(0,0);
+  lcd.print("hi");
+  lcd.setCursor(0,1);
+  lcd.print("Hello world");
+  lcd.backlight();
+  
 }
 
 void loop() {
@@ -43,15 +61,25 @@ void loop() {
     // Farther than 50 cm, turn on the green LED and turn off the red LED
     digitalWrite(greenLedPin, LOW);
     digitalWrite(redLedPin, LOW);
+
+    lcd.clear();
     
   } else if(distance <30 && distance >10) {
     // Closer than or equal to 50 cm, turn on the red LED and turn off the green LED
     digitalWrite(greenLedPin, HIGH);
     digitalWrite(redLedPin, LOW);
+     lcd.setCursor(0,0);
+  lcd.print("Access Approved");
+  lcd.setCursor(0,1);
+  lcd.print("Welcome");
   }
     else if (distance <10){
       digitalWrite(greenLedPin, LOW);
     digitalWrite(redLedPin, HIGH);
+    lcd.setCursor(0,0);
+  lcd.print("Access Denied");
+  lcd.setCursor(0,1);
+  lcd.print("Try Again");
     }
 
   // Delay before the next measurement
