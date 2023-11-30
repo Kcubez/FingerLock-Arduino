@@ -20,8 +20,8 @@ int lockCheck = 0;
 
 void setup()  
 {
-  Serial.begin(115200);
-  delay(500); // just for node MCU
+  Serial.begin(9600);
+  // delay(500); // just for node MCU
   while (!Serial);  // For Yun/Leo/Micro/Zero/...
   delay(100);
   Serial.println("\n\nAdafruit finger detect test");
