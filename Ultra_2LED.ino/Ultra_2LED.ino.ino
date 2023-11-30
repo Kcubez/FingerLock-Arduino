@@ -9,17 +9,21 @@ const int trigPin = 2; // Trigger pin of the ultrasonic sensor
 const int echoPin = 3; // Echo pin of the ultrasonic sensor
 const int greenLedPin = 4; // Pin for the green LED
 const int redLedPin = 5;   // Pin for the red LED
+const int buzzerPin = 6;  // Pin for the buzzer
 
 // Variables for ultrasonic distance measurement
 long duration;
 int distance;
 
 void setup() {
-  // Initialize the sensor and LED pins
+  // ultrasonic sensor
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
+  ///Led pin
   pinMode(greenLedPin, OUTPUT);
   pinMode(redLedPin, OUTPUT);
+  //buzzer
+  pinMode(buzzerPin, OUTPUT);
 
   // Serial communication for debugging
   Serial.begin(9600);
@@ -61,6 +65,7 @@ void loop() {
     // Farther than 50 cm, turn on the green LED and turn off the red LED
     digitalWrite(greenLedPin, LOW);
     digitalWrite(redLedPin, LOW);
+    digitalWrite(buzzerPin, LOW);
 
     lcd.clear();
     
@@ -68,6 +73,7 @@ void loop() {
     // Closer than or equal to 50 cm, turn on the red LED and turn off the green LED
     digitalWrite(greenLedPin, HIGH);
     digitalWrite(redLedPin, LOW);
+      digitalWrite(buzzerPin, LOW);
      lcd.setCursor(0,0);
   lcd.print("Access Approved");
   lcd.setCursor(0,1);
@@ -80,6 +86,9 @@ void loop() {
   lcd.print("Access Denied");
   lcd.setCursor(0,1);
   lcd.print("Try Again");
+   tone(buzzerPin, 1000, 1000); // 1000 Hz for 1 second
+  delay(800); // Pause for 1 second
+  noTone(buzzerPin);;
     }
 
   // Delay before the next measurement
