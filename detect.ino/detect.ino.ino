@@ -8,7 +8,7 @@ volatile int finger_status = -1;
 
 int  rightPin = D6;
 int wrongPin =D7;
-int motorPin = D9;
+int motorPin = D4;
 
 SoftwareSerial mySerial(D2, D1); // TX/RX on fingerprint sensor 2,3 ////(orange,white)
 // SoftwareSerial mySerial(2, 3); // TX/RX on fingerprint sensor 2,3 ////(orange,white)
