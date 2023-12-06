@@ -17,6 +17,7 @@ volatile int finger_status = -1;
 int rightPin = D6;
 int wrongPin = D7;
 int motorPin = D4;
+int relayPin = D3;
 
 SoftwareSerial mySerial(D2, D1); // TX/RX on fingerprint sensor 2,3
 
@@ -42,6 +43,7 @@ void setup() {
   pinMode(rightPin, OUTPUT);
   pinMode(wrongPin, OUTPUT);
   myservo.attach(motorPin);
+  pinMode(relayPin, OUTPUT);
 
   finger.begin(57600);
 
@@ -66,13 +68,16 @@ void loop() {
   if (finger_status != -1 && finger_status != -2) {
     Serial.print("Match");
     digitalWrite(rightPin, HIGH);
+    
 
     if (lockCheck == 0) {
       myservo.write(180);
       lockCheck = 1;
+      digitalWrite(relayPin, LOW);
     } else if (lockCheck == 1) {
       myservo.write(0);
       lockCheck = 0;
+      digitalWrite(relayPin, HIGH);
     }
 
     digitalWrite(wrongPin, LOW);
@@ -82,7 +87,7 @@ void loop() {
     if (finger_status == -2) {
       Serial.print("Not Match");
       digitalWrite(wrongPin, HIGH);
-
+      // digitalWrite(relayPin, HIGH);
       digitalWrite(rightPin, LOW);
       delay(1000);
       digitalWrite(wrongPin, LOW);
