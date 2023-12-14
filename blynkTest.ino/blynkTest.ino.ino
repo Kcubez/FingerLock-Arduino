@@ -12,12 +12,17 @@
 
 Servo myservo;
 
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
 volatile int finger_status = -1;
 
 int rightPin = D6;
 int wrongPin = D7;
-int motorPin = D4;
-int relayPin = D3;
+int relayPin = D5;
+int buzzerPin = D8;
 
 SoftwareSerial mySerial(D2, D1); // TX/RX on fingerprint sensor 2,3
 
@@ -42,7 +47,7 @@ void setup() {
 
   pinMode(rightPin, OUTPUT);
   pinMode(wrongPin, OUTPUT);
-  myservo.attach(motorPin);
+   pinMode(buzzerPin, OUTPUT);
   pinMode(relayPin, OUTPUT);
 
   finger.begin(57600);
@@ -60,6 +65,15 @@ void setup() {
 
   Blynk.begin(auth, ssid, pass);
   timer.setInterval(5000L, notifyOnTheft);
+
+  Wire.begin(D3, D4);  //SDA D3 --- SCL D4
+  lcd.init();         // initialize the lcd
+  lcd.backlight();  
+  lcd.setCursor(5, 0);
+  lcd.print("Hello");
+  delay(1000);
+  lcd.clear();
+  
 }
 
 void loop() {
@@ -67,17 +81,28 @@ void loop() {
 
   if (finger_status != -1 && finger_status != -2) {
     Serial.print("Match");
-    digitalWrite(rightPin, HIGH);
     
+    digitalWrite(rightPin, HIGH);
 
     if (lockCheck == 0) {
-      myservo.write(180);
+     
       lockCheck = 1;
+     
       digitalWrite(relayPin, LOW);
+      lcd.clear();
+       lcd.setCursor(3, 0);
+      lcd.print("Welcome");
+       delay(1000);
+       lcd.clear();
     } else if (lockCheck == 1) {
-      myservo.write(0);
+      
       lockCheck = 0;
+      lcd.clear();
+      lcd.setCursor(3, 0);
+      lcd.print("Door Locked ");
       digitalWrite(relayPin, HIGH);
+      delay(1000);
+      lcd.clear();
     }
 
     digitalWrite(wrongPin, LOW);
@@ -89,11 +114,41 @@ void loop() {
       digitalWrite(wrongPin, HIGH);
       // digitalWrite(relayPin, HIGH);
       digitalWrite(rightPin, LOW);
+      lcd.clear();
+       lcd.setCursor(3, 0);
+      lcd.print("Try Again ");
+        digitalWrite(buzzerPin, HIGH);
+        delay(1000);
+
+  // Turn off the buzzer for 1 second
+      digitalWrite(buzzerPin, LOW);
       delay(1000);
+      // digitalWrite(relayPin, HIGH);
+     
+      
+      delay(1000);
+      lcd.clear();
       digitalWrite(wrongPin, LOW);
 
       // Log the event for theft detection
-      Blynk.logEvent("theftdetect", "Theft in house");
+      Blynk.logEvent("theftdetect", "Failed Attempts At Locker");
+      
+    }
+    else if (lockCheck==1){
+       lcd.clear();
+       lcd.setCursor(2, 0);
+    lcd.print("Please Lock ");
+      
+       lcd.setCursor(3, 1);
+    lcd.print("The Door");
+      
+    }
+    else{
+      lcd.clear();
+       lcd.setCursor(3, 0);
+    lcd.print("Place Your");
+       lcd.setCursor(0, 1);
+    lcd.print("Finger On Sensor");
       
     }
   }
